@@ -5,10 +5,8 @@ from markdown2 import Markdown
 
 class CreateNewPage(forms.Form):
     title = forms.CharField(label = 'Title', max_length = 50)
-    content = forms.CharField(max_length = 500)
-
-
-
+    # content = forms.Textarea(widget = forms.Textarea, label = '')
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows":20, "cols":20}), label = '')
 
 
 def index(request):
@@ -64,7 +62,7 @@ def entry(request, title):
         get_md = util.get_entry(title)
         converted_page = markdowner.convert(get_md)
 
-        return render(request, "encyclopedia/entry.html",{
+        return render(request, "encyclopedia/entry.html", {
             "converted_page": converted_page,
             "title":title,
         })
@@ -79,14 +77,32 @@ def entry(request, title):
 
 
 def create(request):
-    # if request.method == "POST":
-    #     # Create a form instance and populate it with data from the request.
-    #     form =  CreateNewPage(request.POST)
+    if request.method == "POST":
+        # Create a form instance and populate it with data from the request.
+        form =  CreateNewPage(request.POST)
+        markdowner =  Markdown()
+        entries = util.list_entries()
+        # Check if form is valid
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            content = form.cleaned_data["content"]
+            #Check if the title already exists
+            if title in entries:
+                
+                return render(request, "encyclopedia/error.html", {
+                    "message":"The page with this title already exists."
+                })
 
-    #     # Check if form is valid
-    #     if form.is_valid():
-    #         title = form.cleaned_data["title"]
-    #         content = form.cleaned_data["content"]
+            else:
+                util.save_entry(title, content)
+                get_page = util.get_entry(title) 
+                converted_page = markdowner.convert(get_page)
+                return render(request, "encyclopedia/entry.html", {
+                    "converted_page": converted_page,
+                    "title":title,
+                })
+
+
     
     return render(request, "encyclopedia/create.html", {
         "form": CreateNewPage()
