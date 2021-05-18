@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django import forms
 from . import util
 from markdown2 import Markdown
+import random
 
 class CreateNewPage(forms.Form):
     title = forms.CharField(label = 'Title', max_length = 50)
@@ -74,9 +75,9 @@ def entry(request, title):
         })
 
 
-
-
 def create(request):
+    """ Function to create new page """
+
     if request.method == "POST":
         # Create a form instance and populate it with data from the request.
         form =  CreateNewPage(request.POST)
@@ -102,8 +103,18 @@ def create(request):
                     "title":title,
                 })
 
-
-    
     return render(request, "encyclopedia/create.html", {
         "form": CreateNewPage()
+    })
+
+
+def random_page(request):
+    entries = util.list_entries()
+    get_random_page = random.choice(entries)
+    get_md = util.get_entry(get_random_page)
+    markdowner = Markdown()
+    converted_page = markdowner.convert(get_md)
+    return render(request, "encyclopedia/entry.html", {
+        "converted_page": converted_page,
+        "title": get_random_page,
     })
