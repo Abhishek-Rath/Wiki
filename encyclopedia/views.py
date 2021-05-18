@@ -6,17 +6,16 @@ import random
 
 class CreateNewPage(forms.Form):
     title = forms.CharField(label = 'Title', max_length = 50)
-    # content = forms.Textarea(widget = forms.Textarea, label = '')
-    content = forms.CharField(widget=forms.Textarea(attrs={"rows":20, "cols":20}), label = '')
+    textarea = forms.CharField(widget=forms.Textarea, label = '')
+    
 
+#Get list of all entries
+entries = util.list_entries()
+
+#Create instance of Markdown
+markdowner = Markdown() 
 
 def index(request):
-
-    #Get list of all the entries
-    entries = util.list_entries()
-
-    markdowner = Markdown()
-
     if request.method == "POST":
         search_query = request.POST.get('q')
 
@@ -51,12 +50,7 @@ def index(request):
 
 
 def entry(request, title):
-    """ Function to display all the entries available."""
-
-    #Get list of all the entries
-    entries = util.list_entries() 
-
-    markdowner = Markdown()  
+    """ Function to display all the entries available.""" 
 
     #Check if the title is present in the entries
     if title in entries: 
@@ -81,12 +75,11 @@ def create(request):
     if request.method == "POST":
         # Create a form instance and populate it with data from the request.
         form =  CreateNewPage(request.POST)
-        markdowner =  Markdown()
-        entries = util.list_entries()
+        
         # Check if form is valid
         if form.is_valid():
             title = form.cleaned_data["title"]
-            content = form.cleaned_data["content"]
+            textarea = form.cleaned_data["textarea"]
             #Check if the title already exists
             if title in entries:
                 
@@ -95,7 +88,7 @@ def create(request):
                 })
 
             else:
-                util.save_entry(title, content)
+                util.save_entry(title, textarea)
                 get_page = util.get_entry(title) 
                 converted_page = markdowner.convert(get_page)
                 return render(request, "encyclopedia/entry.html", {
@@ -109,10 +102,10 @@ def create(request):
 
 
 def random_page(request):
-    entries = util.list_entries()
-    get_random_page = random.choice(entries)
+    """ Function to random page"""
+
+    get_random_page = random.choice(entries)  #Get random entry from the list of available entries
     get_md = util.get_entry(get_random_page)
-    markdowner = Markdown()
     converted_page = markdowner.convert(get_md)
     return render(request, "encyclopedia/entry.html", {
         "converted_page": converted_page,
