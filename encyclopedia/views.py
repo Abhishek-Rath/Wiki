@@ -7,6 +7,7 @@ import random
 class CreateNewPage(forms.Form):
     title = forms.CharField(label = 'Title', max_length = 50)
     textarea = forms.CharField(widget=forms.Textarea, label = '')
+
     
 
 #Get list of all entries
@@ -109,5 +110,5 @@ def random_page(request):
     converted_page = markdowner.convert(get_md)
     return render(request, "encyclopedia/entry.html", {
         "converted_page": converted_page,
-        "title": get_random_page,
+        # "title": get_random_page,
     })
