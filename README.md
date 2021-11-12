@@ -1,4 +1,4 @@
-# Wiki
+# Wiki - Wikipedia-like online encyclopedia.
 
 - This project is done under the course CS50 - Web Development with Python and JavaScript.
 
