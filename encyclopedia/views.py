@@ -1,14 +1,8 @@
-from django.shortcuts import render
-from django import forms
+from django.shortcuts import render, redirect
 from . import util
 from markdown2 import Markdown
 import random
-
-class CreateNewPage(forms.Form):
-    title = forms.CharField(label = 'Title', max_length = 50)
-    textarea = forms.CharField(widget=forms.Textarea, label = '')
-
-    
+from .forms import CreateNewPage
 
 #Get list of all entries
 entries = util.list_entries()
@@ -17,10 +11,13 @@ entries = util.list_entries()
 markdowner = Markdown() 
 
 def index(request):
+
+    # Search for the entry in the available entries
     if request.method == "POST":
         search_query = request.POST.get('q')
 
         found = 0
+
         for entry in entries:
             if search_query.lower() == entry.lower():
                 found = 1
@@ -29,7 +26,7 @@ def index(request):
                 pass
 
         if found == 1:  
-            # Get the decoded markdown file          
+            # Get markdown file          
             get_md = util.get_entry(search_query)
 
             # Convert the md into html
@@ -103,12 +100,41 @@ def create(request):
 
 
 def random_page(request):
-    """ Function to random page"""
+    """ Function to get any random page"""
 
     get_random_page = random.choice(entries)  #Get random entry from the list of available entries
     get_md = util.get_entry(get_random_page)
     converted_page = markdowner.convert(get_md)
     return render(request, "encyclopedia/entry.html", {
         "converted_page": converted_page,
-        # "title": get_random_page,
+        "title": get_random_page,
     })
+
+
+def edit(request, entry):
+
+    """ Function to edit the requested page """
+
+    if request.method == "GET":
+        title = entry
+        textarea = util.get_entry(title)
+
+        # Pre-populate the form with existing content
+        form = CreateNewPage({"title": title, "textarea": textarea})
+
+        return render(request, "encyclopedia/edit.html", {
+            "form": form,
+            "title":title
+        })
+
+    if request.method == "POST":
+        
+        # after editing, save the contents
+        form = CreateNewPage(request.POST)
+
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            textarea = form.cleaned_data["textarea"]
+
+            util.save_entry(title, textarea)
+            return redirect("entry", title)

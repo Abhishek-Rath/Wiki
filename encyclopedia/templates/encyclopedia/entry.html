@@ -1,11 +1,13 @@
 {% extends "encyclopedia/layout.html" %} 
 
-{% block title %}  {{title}}     {% endblock %}
+{% block title %}  {{title | safe}}   {% endblock %}
 
 {% block body %}
 <div class="entry">
-    
+    <!-- {{title | safe}} -->
     {{converted_page | safe}}
 </div>
+
+<a class="btn btn-primary" href="{% url 'edit' title %}">Edit</a>
 
 {% endblock %}
