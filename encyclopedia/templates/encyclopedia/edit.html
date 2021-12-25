@@ -5,11 +5,22 @@
 {% endblock %}
 
 {% block body %} 
-    <form action="{% url 'edit' title %}" method="POST">
-        {% csrf_token %}
+    <div class="edit-entry">
         <div class="container">
-        {{ form }}
-        <button class="btn btn-primary" type="submit">Save</button>
+            <form action="{% url 'edit' title %}" method="POST">
+                <h2>Edit this page...</h2>
+                {% csrf_token %}
+                <div class="container">
+                <label><strong>Title</strong></label>
+                {{ form.title }}
+                <br>
+                {{form.textarea}}
+                <br>
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+            </form>
+        </div>
+        
     </div>
-    </form>
+    
 {% endblock %}

@@ -1,1 +1,0 @@
-Java is Object Oriented Programming Language.

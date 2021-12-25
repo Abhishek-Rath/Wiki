@@ -1,6 +1,7 @@
 body {
     margin: 0;
     background-color: white;
+    box-sizing: border-box;
 }
 
 code {
@@ -35,4 +36,12 @@ textarea {
 
 .sidebar h2 {
     margin-top: 5px;
+}
+
+.create-entry, .edit-entry {
+    border: 5px solid #e6e6e6;
+    padding: 20px;
+    margin-top: 2%;
+    margin-left: 10%;
+    margin-right: 10%;
 }

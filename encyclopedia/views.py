@@ -12,6 +12,9 @@ markdowner = Markdown()
 
 def index(request):
 
+    substring_results = []
+    substring_search = False
+
     # Search for the entry in the available entries
     if request.method == "POST":
         search_query = request.POST.get('q')
@@ -22,6 +25,9 @@ def index(request):
             if search_query.lower() == entry.lower():
                 found = 1
                 break
+            elif search_query.lower() in entry.lower():
+                substring_results.append(entry)
+                substring_search = True
             else:
                 pass
 
@@ -36,6 +42,15 @@ def index(request):
                 "converted_page":converted_page,
                 "title":search_query,
             })
+
+
+        elif substring_search == True:
+            message = f"Here are some search results matching your query:- {search_query} "
+            return render(request, "encyclopedia/index.html", {
+                "substring_search":True,
+                "substring_results": substring_results,
+                "message": message,
+            })
         else:
             return render(request, "encyclopedia/search.html",{
                 "entries":entries,
@@ -46,6 +61,52 @@ def index(request):
         "entries":entries,
     })
 
+
+# def search(request):      
+#     substring_results = []
+#     search = False
+
+#     #Search for the entry in the available entries
+#     if request.method == "POST":
+#         search_query = request.POST.get('q')
+
+#         found = 0
+
+#         for entry in entries:
+#             if search_query.lower() == entry.lower():
+#                 found = 1
+#                 break
+#             else:
+#                 search_query.lower() in entry.lower()
+#                 substring_results.append(entry)
+#                 search = True
+
+#         if found == 1:  
+#             # Get markdown file          
+#             get_md = util.get_entry(search_query)
+
+#             # Convert the md into html
+#             converted_page = markdowner.convert(get_md)
+
+#             return render(request, "encyclopedia/entry.html", {
+#                 "converted_page":converted_page,
+#                 "title":search_query,
+#             })
+
+#         elif search == True:
+#             message = "Here are some search results matching your query"
+#             return render(request, "encyclopedia/index.html", {
+#                 "search": True,
+#                 "substring_results": substring_results
+#             })
+
+#         else:
+#             return render(request, "encyclopedia/search.html",{
+#                 "entries":entries,
+#                 "message":"Sorry, the page you're looking for is not available. Here are some available entries."
+#             })
+
+    
 
 def entry(request, title):
     """ Function to display all the entries available.""" 

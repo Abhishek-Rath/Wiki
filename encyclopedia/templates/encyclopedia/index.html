@@ -5,11 +5,24 @@
 {% endblock %}
 
 {% block body %}
-    <h1>All Pages</h1>    
-    <ul>
-        {% for entry in entries %}
-            <li style="font-size: 1.5rem;"><a href="/wiki/{{entry}}">{{entry}}</a></li>
-        {% endfor %}
-    </ul>
+    {% if substring_search %} 
+        <h3>
+            {{message}}
+        </h3>
+        <ul>
+            {% for entry in substring_results %}
+                <li style="font-size: 1.5rem;"><a href="/wiki/{{entry}}">{{entry}}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h1>All Pages</h1>    
+        <ul>
+            {% for entry in entries %}
+                <li style="font-size: 1.5rem;"><a href="/wiki/{{entry}}">{{entry}}</a></li>
+            {% endfor %}
+        </ul>
+    
+    {% endif %}
+    
 
 {% endblock %}
